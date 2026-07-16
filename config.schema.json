@@ -1,0 +1,75 @@
+{
+  "pluginAlias": "OpenNeato",
+  "pluginType": "platform",
+  "singular": false,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "title": "Platform Name",
+        "type": "string",
+        "default": "OpenNeato"
+      },
+      "devices": {
+        "title": "Devices",
+        "type": "array",
+        "items": {
+          "title": "OpenNeato Device",
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "Accessory Name",
+              "type": "string",
+              "placeholder": "Neato",
+              "description": "Name shown in the Home app."
+            },
+            "host": {
+              "title": "IP Address / Hostname",
+              "type": "string",
+              "placeholder": "192.168.1.50",
+              "description": "IP address or hostname of the OpenNeato ESP32 on your local network."
+            },
+            "port": {
+              "title": "Port",
+              "type": "integer",
+              "default": 80,
+              "description": "HTTP port of the OpenNeato web server (default 80, change only if you modified the firmware)."
+            },
+            "pollInterval": {
+              "title": "Poll Interval (seconds)",
+              "type": "integer",
+              "default": 30,
+              "minimum": 5,
+              "maximum": 300,
+              "description": "How often to query the device for status updates. Lower values are more responsive but use more network traffic."
+            },
+            "timeout": {
+              "title": "Request Timeout (seconds)",
+              "type": "integer",
+              "default": 10,
+              "minimum": 3,
+              "maximum": 60,
+              "description": "How long to wait for a response from the ESP32 before giving up."
+            }
+          },
+          "required": ["host"]
+        }
+      }
+    }
+  },
+  "layout": [
+    {
+      "key": "devices",
+      "type": "array",
+      "title": "Devices",
+      "buttonText": "Add device",
+      "items": [
+        "devices[].name",
+        "devices[].host",
+        "devices[].port",
+        "devices[].pollInterval",
+        "devices[].timeout"
+      ]
+    }
+  ]
+}
