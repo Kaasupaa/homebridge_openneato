@@ -3,9 +3,22 @@
   "version": "1.0.0",
   "description": "Homebridge plugin for local control of Neato Botvac robots via the OpenNeato ESP32 firmware",
   "license": "MIT",
+  "author": "Kaasupaa",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kaasupaa/homebridge_openneato.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kaasupaa/homebridge_openneato/issues"
+  },
+  "homepage": "https://github.com/Kaasupaa/homebridge_openneato#readme",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "config.schema.json"
+  ],
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
