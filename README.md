@@ -1,82 +1,82 @@
 # homebridge-openneato
 
-Homebridge-plugin Neato Botvac -robotti-imurille paikallisen [OpenNeato](https://github.com/renjfk/OpenNeato) ESP32 -firmwaren kautta.
+Homebridge plugin for local control of Neato Botvac robot vacuums via the [OpenNeato](https://github.com/renjfk/OpenNeato) ESP32 firmware.
 
 ```
 Neato D7
   → ESP32-C3 + OpenNeato
-  → HTTP API (lähiverkko)
+  → HTTP API (local network)
   → homebridge-openneato
-  → HomeKit / Apple Koti
+  → HomeKit / Apple Home
 ```
 
-**Ei pilveä, ei Neato-tiliä.** Kaikki kommunikointi tapahtuu paikallisessa verkossa.
+**No cloud, no Neato account.** All communication happens on your local network.
 
 ---
 
-## Ominaisuudet
+## Features
 
-| HomeKit-elementti | Toiminto |
+| HomeKit element | Function |
 |---|---|
-| Fan (päätile) | Päälle = aloita house clean, Pois = palaa telakkaan |
-| RotationSpeed | 1–33 % = eco, 34–66 % = normal, 67–100 % = intense |
-| Akku | Varaustaso %, latauksen tila, matalan akun hälytys |
-| Tauko-kytkin | Keskeytä / jatka siivous |
-| Spot-siivous-kytkin | Aloita / lopeta spot clean |
-| Etsi Neato -kytkin | Soittaa robotissa äänihälytyksen (sound ID 19) |
+| Fan (main tile) | On = start house clean, Off = return to dock |
+| RotationSpeed | 1–33% = eco, 34–66% = normal, 67–100% = intense |
+| Battery | Charge level %, charging state, low-battery alert |
+| Pause switch | Pause / resume cleaning |
+| Spot clean switch | Start / stop spot clean |
+| Locate switch | Plays a locate sound on the robot (sound ID 19) |
 
-### Siri-esimerkit
+### Siri examples
 
-- *"Hey Siri, laita Neato päälle"* → aloittaa house clean
-- *"Hey Siri, sammuta Neato"* → lähettää robotin telakkaan
-- *"Hey Siri, mikä on Neaton akun tila?"*
+- *"Hey Siri, turn on Neato"* → starts house clean
+- *"Hey Siri, turn off Neato"* → sends the robot back to the dock
+- *"Hey Siri, what's Neato's battery level?"*
 
 ---
 
-## Vaatimukset
+## Requirements
 
 - Homebridge ≥ 1.6.0
 - Node.js ≥ 18.0.0
-- OpenNeato-firmware asennettuna ESP32:lle
-- ESP32 samassa lähiverkossa kuin Homebridge
+- OpenNeato firmware installed on the ESP32
+- ESP32 on the same local network as Homebridge
 
 ---
 
-## Asennus
+## Installation
 
-### Homebridgellä (suositeltu)
+### Via Homebridge (recommended)
 
-Hae **Homebridge Config UI** -käyttöliittymästä `homebridge-openneato` ja asenna.
+Search for `homebridge-openneato` in **Homebridge Config UI** and install it.
 
-### Manuaalisesti Raspberry Pillä
+### Manually on a Raspberry Pi
 
 ```bash
 sudo npm install -g homebridge-openneato
 ```
 
-### Kehitysversio (lokaalisti)
+### Development version (local)
 
 ```bash
-# Kloonaa repo ja asenna riippuvuudet
-git clone https://github.com/sinun-tunnus/homebridge-openneato.git
-cd homebridge-openneato
+# Clone the repo and install dependencies
+git clone https://github.com/Kaasupaa/homebridge_openneato.git
+cd homebridge_openneato
 npm install
 
-# Käännä TypeScript
+# Compile TypeScript
 npm run build
 
-# Linkitä Homebridge-asennukseen
+# Link into your Homebridge installation
 sudo npm link
 
-# Linkitä Homebridgen globaaliin asennukseen
+# Link the plugin into Homebridge's global install
 sudo npm link homebridge-openneato
 ```
 
 ---
 
-## Konfiguraatio
+## Configuration
 
-Lisää `~/.homebridge/config.json` -tiedostoon:
+Add to your `~/.homebridge/config.json`:
 
 ```json
 {
@@ -98,70 +98,70 @@ Lisää `~/.homebridge/config.json` -tiedostoon:
 }
 ```
 
-### Konfiguraatio-asetukset
+### Configuration options
 
-| Asetus | Tyyppi | Oletus | Kuvaus |
+| Option | Type | Default | Description |
 |---|---|---|---|
-| `name` | string | `"Neato"` | Nimi Apple Kotissa |
-| `host` | string | **pakollinen** | ESP32:n IP-osoite tai hostname |
-| `port` | integer | `80` | HTTP-portti |
-| `pollInterval` | integer | `30` | Tilakyselyväli sekunteina (5–300) |
-| `timeout` | integer | `10` | Pyyntöjen timeout sekunteina |
+| `name` | string | `"Neato"` | Name shown in Apple Home |
+| `host` | string | **required** | IP address or hostname of the ESP32 |
+| `port` | integer | `80` | HTTP port |
+| `pollInterval` | integer | `30` | Status poll interval in seconds (5–300) |
+| `timeout` | integer | `10` | Request timeout in seconds |
 
-**Vinkki:** Jos ESP32:n IP voi vaihtua, aseta se kiinteäksi DHCP-palvelimesta (MAC-osoite-pohjainen varaus).
+**Tip:** If the ESP32's IP can change, set a DHCP reservation (based on its MAC address) to keep it fixed.
 
 ---
 
-## Kehitys
+## Development
 
-### Tiedostorakenne
+### File structure
 
 ```
 homebridge-openneato/
 ├── src/
-│   ├── index.ts       # Plugin-rekisteröinti
-│   ├── settings.ts    # Vakiot (PLUGIN_NAME, PLATFORM_NAME)
-│   ├── platform.ts    # DynamicPlatformPlugin – laitteiden hallinta
-│   ├── accessory.ts   # OpenNeatoAccessory – HomeKit-palvelut ja polling
-│   ├── api.ts         # HTTP-asiakas OpenNeato ESP32:lle
-│   └── types.ts       # TypeScript-tyypit + tila-apufunktiot
+│   ├── index.ts       # Plugin registration
+│   ├── settings.ts    # Constants (PLUGIN_NAME, PLATFORM_NAME)
+│   ├── platform.ts    # DynamicPlatformPlugin – device management
+│   ├── accessory.ts   # OpenNeatoAccessory – HomeKit services and polling
+│   ├── api.ts         # HTTP client for the OpenNeato ESP32
+│   └── types.ts       # TypeScript types + state helper functions
 ├── test/
-│   └── api.test.ts    # Yksikkötestit (node:test)
-├── dist/              # Käännetty JavaScript (gitignore)
-├── config.schema.json # Homebridge Config UI -kaavio
+│   └── api.test.ts    # Unit tests (node:test)
+├── dist/              # Compiled JavaScript (gitignored)
+├── config.schema.json # Homebridge Config UI schema
 ├── package.json
 └── tsconfig.json
 ```
 
-### Komennnot
+### Commands
 
 ```bash
-# Käännä TypeScript → dist/
+# Compile TypeScript → dist/
 npm run build
 
-# Tarkkaile muutoksia ja käännä automaattisesti
+# Watch for changes and rebuild automatically
 npm run watch
 
-# Aja testit (ei vaadi erillistä build-vaihetta)
+# Run tests (no separate build step required)
 npm test
 
-# Käynnistä Homebridge debug-tilassa
+# Start Homebridge in debug mode
 homebridge -D
 ```
 
-### Debug-lokit
+### Debug logs
 
-Käynnistä Homebridge `-D`-lipulla nähdäksesi plugin-lokit:
+Start Homebridge with the `-D` flag to see plugin logs:
 
 ```bash
 homebridge -D
 ```
 
-Plugin kirjoittaa debug-viestit muodossa `[Neato] ...`. Info-tason viestit näkyvät aina normaalissa ajossa (komennot, virheet, tila-muutokset).
+The plugin writes debug messages in the form `[Neato] ...`. Info-level messages (commands, errors, state changes) are always shown during normal operation.
 
-### Testit
+### Tests
 
-Testit käyttävät Node.js:n sisäänrakennettua `node:test`-moduulia ja `tsx`:ää TypeScript-tuen lisäämiseksi. Fetch-kutsut mockataan injektoimalla mock-funktio `OpenNeatoApi`-konstruktoriin — ei `global.fetch`-monkey-patching.
+Tests use Node.js's built-in `node:test` module and `tsx` for TypeScript support. Fetch calls are mocked by injecting a mock function into the `OpenNeatoApi` constructor — no `global.fetch` monkey-patching.
 
 ```bash
 npm test
@@ -169,36 +169,31 @@ npm test
 
 ---
 
-## HomeKit-arkkitehtuuri
+## HomeKit architecture
 
-HomeKit ei tue natiivia Robot Vacuum -palvelua (HAP-spekissä ei ole VacuumCleaner-serviceä). Plugin käyttää:
+HomeKit has no native Robot Vacuum service (there's no VacuumCleaner service in the HAP spec). The plugin uses:
 
-- **Fanv2** (`Service.Fanv2`) pääpalveluna, koska se tukee sekä `Active`-karakteristiikkaa (on/off) että `RotationSpeed`-karakteristiikkaa (fan speed = siivousteho). Siri ymmärtää tämän luontevasti.
-- **Battery** tarkalla varaustasolla ja latauksen tilalla.
-- Erilliset **Switch**-palvelut pause-, spot- ja locate-toiminnoille.
+- **Fanv2** (`Service.Fanv2`) as the main service, because it supports both the `Active` characteristic (on/off) and `RotationSpeed` (fan speed = cleaning power). Siri understands this naturally.
+- **Battery** with exact charge level and charging state.
+- Separate **Switch** services for pause, spot clean, and locate.
 
 ---
 
-## Julkaisu npm:ään
+## Publishing to npm
 
 ```bash
-# 1. Varmista että kaikki toimii
+# 1. Make sure everything works
 npm run build && npm test
 
-# 2. Kirjaudu npm:ään
+# 2. Log in to npm
 npm login
 
-# 3. Julkaise
+# 3. Publish
 npm publish
 ```
 
-Jotta plugin näkyy Homebridge Config UI:ssa, lisää `package.json`-tiedostoon:
-```json
-"keywords": ["homebridge-plugin"]
-```
-
 ---
 
-## Lisenssi
+## License
 
 MIT
