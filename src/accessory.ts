@@ -47,7 +47,7 @@ export class OpenNeatoAccessory {
     private readonly config: DeviceConfig,
   ) {
     const { Service, Characteristic } = platform;
-    this.label = config.name ?? config.host;
+    this.label = config.name ?? 'Neato';
 
     this.robot = new OpenNeatoApi(
       config.host,
@@ -99,33 +99,38 @@ export class OpenNeatoAccessory {
       .onGet(this.getLowBattery.bind(this));
 
     // ── Pause/resume switch ──────────────────────────────────────────────────
+    // Prefixed with the device label so multiple robots don't show identical
+    // tile names ("Tauko", "Tauko", ...) in the Home app.
+    const pauseName = `${this.label} Tauko`;
     this.pauseSwitch =
       accessory.getServiceById(Service.Switch, 'pause') ??
-      accessory.addService(Service.Switch, 'Tauko', 'pause');
+      accessory.addService(Service.Switch, pauseName, 'pause');
 
-    this.pauseSwitch.setCharacteristic(Characteristic.Name, 'Tauko');
+    this.pauseSwitch.setCharacteristic(Characteristic.Name, pauseName);
     this.pauseSwitch
       .getCharacteristic(Characteristic.On)
       .onGet(this.getPaused.bind(this))
       .onSet(this.setPaused.bind(this));
 
     // ── Spot cleaning switch ─────────────────────────────────────────────────
+    const spotName = `${this.label} Spot-siivous`;
     this.spotSwitch =
       accessory.getServiceById(Service.Switch, 'spot') ??
-      accessory.addService(Service.Switch, 'Spot-siivous', 'spot');
+      accessory.addService(Service.Switch, spotName, 'spot');
 
-    this.spotSwitch.setCharacteristic(Characteristic.Name, 'Spot-siivous');
+    this.spotSwitch.setCharacteristic(Characteristic.Name, spotName);
     this.spotSwitch
       .getCharacteristic(Characteristic.On)
       .onGet(this.getSpot.bind(this))
       .onSet(this.setSpot.bind(this));
 
     // ── Locate switch (auto-off after 3 s) ───────────────────────────────────
+    const locateName = `${this.label} Etsi`;
     this.locateSwitch =
       accessory.getServiceById(Service.Switch, 'locate') ??
-      accessory.addService(Service.Switch, 'Etsi Neato', 'locate');
+      accessory.addService(Service.Switch, locateName, 'locate');
 
-    this.locateSwitch.setCharacteristic(Characteristic.Name, 'Etsi Neato');
+    this.locateSwitch.setCharacteristic(Characteristic.Name, locateName);
     this.locateSwitch
       .getCharacteristic(Characteristic.On)
       .onGet(() => false)
