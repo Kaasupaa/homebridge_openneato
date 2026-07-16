@@ -1,6 +1,6 @@
 {
   "name": "homebridge-openneato",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Homebridge plugin for local control of Neato Botvac robots via the OpenNeato ESP32 firmware",
   "license": "MIT",
   "author": "Kaasupaa",
